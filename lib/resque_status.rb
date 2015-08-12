@@ -1,3 +1,5 @@
+require 'resque'
+
 class ResqueStatus
   
   @queued = {}

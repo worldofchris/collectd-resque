@@ -1,0 +1,7 @@
+export HOME=/home/my_user
+export PATH=$HOME/.rbenv/shims:$PATH;
+export RBENV_ROOT=$HOME/.rbenv;
+
+cd $HOME/collectd-resque
+
+./collectd_resque.rb -c /path/to/resque/config.yml -e production

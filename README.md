@@ -11,17 +11,19 @@ Logs [Resque](https://github.com/resque/resque) details to [collectd](https://co
 
 Clone this repo then run `bundle install`.
 
-Load and configure the Exec Plugin e.g.
+Load and configure the Exec Plugin.
+
+e.g. if you have installed into `/home/my_user/collectd-resque`:
 
 	LoadPlugin exec
 	<Plugin exec>
-	  Exec "my_user:my_group" "/home/my_user/collectd_resque.rb" \
-	    "-c" "/path/to/resque/config.yml" \
-	    "-e" "production"
+	  Exec "my_user:my_group" "/home/my_user/collectd-resque/collectd_resque.sh" 
 	</Plugin>
+
+You'll need to create a wrapper script based on the example `collectd_resque.sh.example`
+
+This is required for collectd to pick up the bundle environment.
 
 ## Development
 
-### Running the tests
-
-	rspec
+There are [Rspec](http://rspec.info/) tests which can be run in the normal way - i.e. `rspec`

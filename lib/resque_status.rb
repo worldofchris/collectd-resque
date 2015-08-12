@@ -3,8 +3,8 @@ class ResqueStatus
   @queued = {}
   @wip = {}
 
-  def self.redis(server)
-    Resque.redis(server)
+  def self.redis=(server)
+    Resque.redis = server
   end
 
   def self.queued
@@ -17,14 +17,14 @@ class ResqueStatus
 
   def self.wip
     queues = Resque.queues()
-    workers = Resque.workers()
+    working = Resque.working()
 
     queues.each do |q|
       @wip[q] = 0
     end
 
-    workers.each do |worker|
-      queue = worker.split(":").last
+    working.each do |worker|
+      queue = worker.job['queue']
       @wip[queue] += 1
     end
     @wip
@@ -32,6 +32,7 @@ class ResqueStatus
 
   def self.to_collectd(hostname)
     output = []
+
     @queued = self.queued
     @wip = self.wip
     @queued.each do |key, value|

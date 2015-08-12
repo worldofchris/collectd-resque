@@ -34,10 +34,10 @@ resque_conf = YAML.load_file(opts[:config_file])
 Trollop::die :environment, "#{opts[:environment]} not found" unless resque_conf.has_key?(opts[:environment])
 ResqueStatus.redis = resque_conf[opts[:environment]]
 
-interval = ENV(COLLECTD_INTERVAL)
-hostname = ENV(COLLECTD_HOSTNAME)
+interval = ENV['COLLECTD_INTERVAL']
+hostname = ENV['COLLECTD_HOSTNAME']
 
 while true do
   puts ResqueStatus.to_collectd(hostname)
-  sleep interval
+  sleep interval.to_i
 end

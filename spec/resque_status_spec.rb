@@ -6,11 +6,11 @@ RSpec.describe ResqueStatus do
     dummy_resque = class_double("Resque").
       as_stubbed_const(:transfer_nested_constants => true)
 
-    expect(dummy_resque).to receive(:redis).with("demo.server")
+    expect(dummy_resque).to receive(:redis=).with("demo.server")
     expect(dummy_resque).to receive(:queues).and_return(['import', 'process', 'dispatch'])
     expect(dummy_resque).to receive(:size).with(any_args).and_return(1,2,3)
 
-    ResqueStatus.redis("demo.server")
+    ResqueStatus.redis ="demo.server"
     queues = ResqueStatus.queued()
     expect(queues).to eq({"import" => 1, "process"=> 2, "dispatch"=> 3})
   end
@@ -20,9 +20,9 @@ RSpec.describe ResqueStatus do
       as_stubbed_const(:transfer_nested_constants => true)
 
     expect(dummy_resque).to receive(:queues).and_return(['import', 'process', 'dispatch'])
-    expect(dummy_resque).to receive(:workers).and_return(["foo-qtm-02:11870:import",
-                                                          "bar-que-01:21128:process",
-                                                          "him-que-02:15106:process"])
+    expect(dummy_resque).to receive(:working).and_return([instance_double("Worker", :job => {"queue" => "import"}),
+                                                          instance_double("Worker", :job => {"queue" => "process"}),
+                                                          instance_double("Worker", :job => {"queue" => "process"})])
     queues = ResqueStatus.wip()
     expect(queues).to eq({"import" => 1,
                           "process"=> 2,
@@ -30,15 +30,17 @@ RSpec.describe ResqueStatus do
 
   end
 
+# .job['queue']
+
   it 'formats the output for collectd' do
     dummy_resque = class_double("Resque").
       as_stubbed_const(:transfer_nested_constants => true)
 
     expect(dummy_resque).to receive(:queues).twice.and_return(['import', 'process', 'dispatch'])
     expect(dummy_resque).to receive(:size).with(any_args).and_return(1,2,3)
-    expect(dummy_resque).to receive(:workers).and_return(["foo-qtm-02:11870:import",
-                                                          "bar-que-01:21128:process",
-                                                          "him-que-02:15106:process"])
+    expect(dummy_resque).to receive(:working).and_return([instance_double("Worker", :job => {"queue" => "import"}),
+                                                          instance_double("Worker", :job => {"queue" => "process"}),
+                                                          instance_double("Worker", :job => {"queue" => "process"})])
 
     q = ResqueStatus.to_collectd("queue-master")
     expect(q).to eq(["PUTVAL queue-master/import/queue_length N:1",

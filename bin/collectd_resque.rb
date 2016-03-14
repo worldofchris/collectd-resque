@@ -6,7 +6,7 @@ require 'bundler/setup'
 require 'yaml'
 require 'trollop'
 
-require_relative 'lib/resque_status'
+require_relative '../lib/resque_status'
 
 opts = Trollop::options do
   banner <<-EOS
